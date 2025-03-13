@@ -16,10 +16,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function renderizarOficinas(funcionarios) {
         directorio.innerHTML = "";
-    
-        // Crear un objeto para agrupar funcionarios por oficina
+
+        // Definir el orden deseado de las oficinas
+        const ordenOficinas = [
+            "SubDirección ",
+            "Coordinación Misional",
+            "Coordinación Académica",
+            "Administración Educativa",
+            "Fondo Emprender",
+            "Articuladora de planeacion",
+            "Competencia laborales",
+            "Financiera",
+            "Programas especiales",
+            "Bienestar al aprendiz",
+            "Administraion de la granja ",
+            "Planeación",
+            "Tesorería"
+
+        ];
+
         let oficinasAgrupadas = {};
-    
+
         funcionarios.forEach(funcionario => {
             let oficina = funcionario.Oficina || "Sin Oficina";
             if (!oficinasAgrupadas[oficina]) {
@@ -30,9 +47,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             oficinasAgrupadas[oficina].funcionarios.push(funcionario);
         });
-    
-        // Crear las tarjetas de oficina sin repetir
-        Object.values(oficinasAgrupadas).forEach(oficina => {
+
+        // Convertir objeto a array y ordenar según el orden definido
+        let oficinasOrdenadas = Object.values(oficinasAgrupadas).sort((a, b) => {
+            let indexA = ordenOficinas.indexOf(a.nombre);
+            let indexB = ordenOficinas.indexOf(b.nombre);
+            return (indexA !== -1 ? indexA : 999) - (indexB !== -1 ? indexB : 999);
+        });
+
+        // Crear las tarjetas de oficina en el orden correcto
+        oficinasOrdenadas.forEach(oficina => {
             let tarjetaOficina = document.createElement("div");
             tarjetaOficina.classList.add("tarjeta-oficina");
             tarjetaOficina.textContent = oficina.nombre;
@@ -40,17 +64,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             directorio.appendChild(tarjetaOficina);
         });
     }
-    
+
 
     function mostrarDetalles(oficina) {
         const modalContent = document.getElementById("modal-content");
         modalContent.innerHTML = `<h5>${oficina.nombre}</h5>`;
-    
+
         oficina.funcionarios.forEach(funcionario => {
             let nodoFuncionario = crearNodoFuncionario(funcionario);
             modalContent.appendChild(nodoFuncionario);
         });
-    
+
         // Activar el modal
         document.getElementById("openModalButton").click();
     }
@@ -65,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div> <span class="celular">Celular:</span> ${funcionario.Celular || "Sin celular"}</div>
         <div> <span class="funcionalidad">Funciones:</span> ${funcionario.Funcionalidad || "Sin Función"}</div>
     `;
-    
+
 
         if (funcionario.subordinados && funcionario.subordinados.length > 0) {
             let divSubordinados = document.createElement("div");
@@ -82,9 +106,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         return divFuncionario;
     }
 
-     
 
-    
+
+
 
     obtenerJerarquia();
 });
